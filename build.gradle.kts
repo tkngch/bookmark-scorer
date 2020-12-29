@@ -5,6 +5,8 @@ plugins {
 
     id("org.jlleitschuh.gradle.ktlint") version "9.4.0"
     id("com.palantir.git-version") version "0.12.3"
+
+    id("maven-publish")
 }
 
 group = "tkngch"
@@ -46,5 +48,23 @@ ktlint {
     enableExperimentalRules.set(true)
     filter {
         exclude { element -> element.file.path.contains("generated/") }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/tkngch/bookmark-scorer")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+    publications {
+        create<MavenPublication>("gpr") {
+            from(components["java"])
+        }
     }
 }
