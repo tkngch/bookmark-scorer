@@ -1,10 +1,13 @@
 name: build
 on: [push]
 jobs:
-        build:
-                runs-on: ubuntu-20.04
-                steps:
-                        - uses: actions/checkout@master
-                        - uses: nanasess/setup-chromedriver@master
-                        - name: Build with Gradle
-                          run: ./gradlew build
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - uses: nanasess/setup-chromedriver@master
+      - name: Build with Gradle
+        run: ./gradlew build
