@@ -31,3 +31,8 @@ hs_err_pid*
 
 # IntelliJ
 .idea
+
+# Python
+.venv
+__pycache__
+*.pyc

@@ -16,14 +16,20 @@ version = gitVersion()
 
 repositories {
     mavenCentral()
+    jcenter() // for pytorch
 }
 
 dependencies {
+    implementation("org.pytorch:pytorch_java_only:1.7.1")
     testImplementation(kotlin("test-junit"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.4.2")
 }
 
 tasks.test {
+    // note that libtorch needs to be downloaded from here:
+    // https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-1.7.1%2Bcpu.zip
+    systemProperty("java.library.path", file("libtorch/lib").absolutePath)
+
     useJUnitPlatform()
     testLogging.events = setOf(
         org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED,
