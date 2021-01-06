@@ -9,5 +9,9 @@ jobs:
         with:
           java-version: 11
       - uses: nanasess/setup-chromedriver@master
+      - name: Download libtorch
+        run: |
+             curl -L -sS -o libtorch.zip https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-1.7.1%2Bcpu.zip
+             unzip libtorch.zip
       - name: Build with Gradle
         run: ./gradlew build
