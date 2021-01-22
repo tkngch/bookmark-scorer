@@ -6,7 +6,8 @@ Bookmark relevance scoring methods. To be used to the bookmark manager ([Link](h
 
 ## Implemented methods
 
-- Average daily visits
+- Averaging model
+- Temporally-discounted averaging model
 - Poisson model
 
 ## How to retrain a model and deploy
@@ -20,16 +21,16 @@ python -m venv .venv
 .venv/bin/pip -r ml_requirements.txt
 ```
 
-1. Retrain the Poisson model by issuing the following command:
+1. Retrain the models by issuing the following command:
 
 ```
 .venv/bin/python -m ml
 ```
 
-The model is retrained on new data, and its performance on validation dataset is
-compared against that of the current production model. If the retrained model
-outperforms the current production model, the retrained model is serialised and
-automatically replaces the production model in `bookmark-scorer` library.
+The models are retrained on new data, and the best-performing model is compared
+against the production model on their performance on the validation data-set. If
+the retrained model outperforms the production model, the best retrained model
+is serialised and stored as the new production model.
 
 2. Commit the serialised model and push the commit.
 

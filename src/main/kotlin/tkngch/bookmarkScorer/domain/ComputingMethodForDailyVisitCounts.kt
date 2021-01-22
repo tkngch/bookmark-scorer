@@ -1,5 +1,10 @@
 package tkngch.bookmarkScorer.domain
 
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.long
 import org.pytorch.IValue
 import org.pytorch.Module
 import org.pytorch.Tensor
@@ -45,14 +50,18 @@ internal class AverageVisitCounts : ComputingMethodForDailyVisitCounts {
     }
 }
 
-internal class PoissonRegression : ComputingMethodForDailyVisitCounts {
+internal class ModelForDailyVisitCounts : ComputingMethodForDailyVisitCounts {
     private val model: Module by lazy {
-        Module.load({}.javaClass.getResource("/poisson_regression.pt").path)
+        Module.load({}.javaClass.getResource("/model.pt").path)
+    }
+    private val metadata: JsonElement by lazy {
+        Json.parseToJsonElement({}.javaClass.getResource("/model_metadata.json").readText())
     }
 
     override fun inferToday(records: DailyVisitCounts): InferredCounts {
         val today = LocalDate.now()
-        val nDatesToConsider: Long = 10 // Determined and required by the model.
+        val nDatesToConsider: Long =
+            metadata.jsonObject["hyper_parameters"]!!.jsonObject["n_days"]!!.jsonPrimitive.long
 
         val allBookmarkIds = records.keys.map { it.bookmarkId }.distinct()
         val pastCounts: Map<BookmarkId, List<Int>> = allBookmarkIds.map { bookmarkId ->

@@ -57,8 +57,8 @@ class ComputingMethodForDailyVisitCountsTest {
     }
 
     @Nested
-    inner class PoissonRegressionTest {
-        private val instance = PoissonRegression()
+    inner class TorchModelTest {
+        private val instance = ModelForDailyVisitCounts()
         private val today = LocalDate.now()
 
         @Test
