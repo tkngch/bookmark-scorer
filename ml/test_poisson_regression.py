@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
+"""Test poisson regression model."""
 
 from pytest import approx
 from torch import tensor
 from torch.nn import PoissonNLLLoss
 
-from ml.poisson_regression import (DataSet, fit_poisson_regression,
-                                   get_poisson_loss)
+from ml.domain.data import DataSet
+from ml.domain.loss import Loss
+from ml.domain.model import HyperParameters
+from ml.poisson_regression import define_model
 
 
 def test_overfit():
@@ -15,14 +18,18 @@ def test_overfit():
     specification, a model may not overfit.
 
     """
-    dataset = DataSet(x=tensor([[1., 1., 1., 1.], [2., 2., 2., 2.]]), y=tensor([[1.], [2.]]))
-    model = fit_poisson_regression(dataset, l2_coef=0.0)
+    n_dimensions = 4
+    dataset = DataSet(
+        x=tensor([[1.0] * n_dimensions, [2.0] * n_dimensions]), y=tensor([[1.0], [2.0]])
+    )
+    model = define_model(HyperParameters(n_days=n_dimensions, l2_coef=0.0))
+    model.train(dataset, n_epochs=10000)
 
-    actual = get_poisson_loss(dataset, model)
+    actual = Loss.calculate(dataset, model.model, is_yhat_logged=True)
     # Expected loss is when inference equals the outcomes.
     expected = PoissonNLLLoss(full=True, log_input=False)(dataset.y, dataset.y).item()
 
-    assert actual == approx(expected)
+    assert actual.poisson_nll == approx(expected)
 
 
 def test_underfit():
@@ -32,10 +39,14 @@ def test_underfit():
     that a larger value makes the weight approach zero.
 
     """
-    dataset = DataSet(x=tensor([[1., 1., 1., 1.], [2., 2., 2., 2.]]), y=tensor([[1.], [2.]]))
-    model = fit_poisson_regression(dataset, l2_coef=1e5)
+    n_dimensions = 4
+    dataset = DataSet(
+        x=tensor([[1.0] * n_dimensions, [2.0] * n_dimensions]), y=tensor([[1.0], [2.0]])
+    )
+    model = define_model(HyperParameters(n_days=n_dimensions, l2_coef=1e5))
+    model.train(dataset, n_epochs=10000)
 
-    parameter = [x for name, x in model.named_parameters() if name == "weight"]
+    parameter = [x for name, x in model.model.named_parameters() if name == "weight"]
     assert len(parameter) == 1
     norm = parameter[0].norm()
     assert norm < 1e-4

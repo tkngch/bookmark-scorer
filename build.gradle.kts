@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.4.21"
+    kotlin("plugin.serialization") version "1.4.10"
 
     id("org.jlleitschuh.gradle.ktlint") version "9.4.0"
     id("com.palantir.git-version") version "0.12.3"
@@ -20,6 +21,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
     implementation("org.pytorch:pytorch_java_only:1.7.1")
     testImplementation(kotlin("test-junit"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.4.2")

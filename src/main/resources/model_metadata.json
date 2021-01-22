@@ -1,0 +1,1 @@
+{"model_name": "temporally_discounted_averaging", "hyper_parameters": {"n_days": 10, "l2_coef": null}, "is_yhat_logged": false}

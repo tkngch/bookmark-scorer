@@ -16,10 +16,10 @@ data class Visits(val records: List<VisitInstant>) {
     }
     fun inferAverageDailyCounts() = averageDailyCounts.inferToday(asDailyVisitCounts)
 
-    private val poissonRegression: ComputingMethodForDailyVisitCounts by lazy {
-        PoissonRegression()
+    private val inferenceModel: ComputingMethodForDailyVisitCounts by lazy {
+        ModelForDailyVisitCounts()
     }
-    fun inferDailyCounts() = poissonRegression.inferToday(asDailyVisitCounts)
+    fun inferDailyCounts() = inferenceModel.inferToday(asDailyVisitCounts)
 }
 
 data class VisitInstant(val bookmarkId: BookmarkId, val instant: Instant)
