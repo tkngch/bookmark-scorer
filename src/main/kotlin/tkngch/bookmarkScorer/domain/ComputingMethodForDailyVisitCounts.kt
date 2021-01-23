@@ -8,8 +8,9 @@ import kotlinx.serialization.json.long
 import org.pytorch.IValue
 import org.pytorch.Module
 import org.pytorch.Tensor
-import java.io.File
 import java.io.File.createTempFile
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlin.math.exp
@@ -56,9 +57,9 @@ internal class ModelForDailyVisitCounts : ComputingMethodForDailyVisitCounts {
     private val model: Module by lazy {
         // libtorch cannot load a file if the file is located inside a jar file. So copy the file to
         // outside the jar before loading.
-        val modelFile = File({}.javaClass.getResource("/model.pt").path)
+        val modelFileContent = {}.javaClass.getResourceAsStream("/model.pt")
         val tmpFile = createTempFile("bookmark-scorer-model-", ".pt")
-        modelFile.copyTo(tmpFile, overwrite = true)
+        Files.copy(modelFileContent, tmpFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
         Module.load(tmpFile.absolutePath.toString())
     }
     private val metadata: JsonElement by lazy {
